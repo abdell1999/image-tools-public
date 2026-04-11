@@ -1,10 +1,12 @@
 // share-target.js
 // This script is imported by the Workbox service worker to handle Web Share Target POST requests.
 
+const scope = new URL(self.registration.scope).pathname
+
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url)
 
-  if (event.request.method === 'POST' && url.pathname === '/') {
+  if (event.request.method === 'POST' && url.pathname === scope) {
     event.respondWith((async () => {
       try {
         const formData = await event.request.formData()
@@ -16,10 +18,10 @@ self.addEventListener('fetch', (event) => {
         }
 
         // Redirect to the app with a query parameter
-        return Response.redirect('/?shared=true', 303)
+        return Response.redirect(scope + '?shared=true', 303)
       } catch (error) {
         console.error('Error handling share target POST', error)
-        return Response.redirect('/', 303)
+        return Response.redirect(scope, 303)
       }
     })())
   }
